@@ -1,4 +1,4 @@
-package src.client;
+package client;
 import java.net.*;
 import java.io.*;
 import javax.net.ssl.*;
