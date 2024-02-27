@@ -23,7 +23,6 @@ public class DatabaseManager{
 
     private final String logPath = "src/database/log.txt";
     private final String recordPath = "src/database/records/";
-    private final String personPath = "src/database/persons.txt";
     
     public DatabaseManager(){
 
@@ -98,7 +97,7 @@ public class DatabaseManager{
 
     }
 
-    private String getTime() {
+    public String getTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm");
         LocalDateTime time = LocalDateTime.now();
         return formatter.format(time);

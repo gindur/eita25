@@ -3,8 +3,6 @@ package users;
 import java.util.ArrayList;
 import java.util.List;
 
-import data.Record;
-
 public class Doctor extends Person{
     private List<Patient> patients;
     private String field;
@@ -20,10 +18,17 @@ public class Doctor extends Person{
         patients.add(patient);
     }
 
-    public void createRec(Nurse nurse, Patient patient,String content ){
-        Record rec = new Record(this, nurse, patient, getHospital(), field, content);
+    public String getField(){
+        return field;
+    }
 
-        // send to server?
+    @Override
+    public String getRole() {
+        return "Doctor";
+    }
+
+    public List<Patient> getPatients(){
+        return patients;
     }
     
     

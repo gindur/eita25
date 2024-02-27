@@ -26,5 +26,9 @@ public class Nurse extends Person{
     public String getRole() {
         return "Nurse";
     }
+
+    public List<Patient> getPatients(){
+        return patients;
+    }
     
 }
