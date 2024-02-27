@@ -1,19 +1,24 @@
 package server;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
 import javax.net.*;
 import javax.net.ssl.*;
+
+
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
-public class server implements Runnable {
+public class Server implements Runnable {
   private ServerSocket serverSocket = null;
   private static int numConnectedClients = 0;
+  private static final String serverKeystorePath = "certificates/server/serverkeystore";
+  private static final String serverTruststorePath = "certificates/server/servertruststore";
 
   
-  public server(ServerSocket ss) throws IOException {
+  public Server(ServerSocket ss) throws IOException {
     serverSocket = ss;
     newListener();
   }
@@ -76,7 +81,7 @@ public class server implements Runnable {
       ServerSocketFactory ssf = getServerSocketFactory(type);
       ServerSocket ss = ssf.createServerSocket(port, 0, InetAddress.getByName(null));
       ((SSLServerSocket)ss).setNeedClientAuth(true); // enables client authentication
-      new server(ss);
+      new Server(ss);
     } catch (IOException e) {
       System.out.println("Unable to start Server: " + e.getMessage());
       e.printStackTrace();
@@ -94,9 +99,9 @@ public class server implements Runnable {
         KeyStore ts = KeyStore.getInstance("JKS");
         char[] password = "password".toCharArray();
         // keystore password (storepass)
-        ks.load(new FileInputStream("serverkeystore"), password);  
+        ks.load(new FileInputStream(serverKeystorePath), password);  
         // truststore password (storepass)
-        ts.load(new FileInputStream("servertruststore"), password); 
+        ts.load(new FileInputStream(serverTruststorePath), password); 
         kmf.init(ks, password); // certificate password (keypass)
         tmf.init(ts);  // possible to use keystore as truststore here
         ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);

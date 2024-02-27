@@ -1,4 +1,4 @@
-package src.users;
+package users;
 
 public class Patient extends Person {
     private String field;
@@ -6,6 +6,11 @@ public class Patient extends Person {
     public Patient(String name, String hospital, String field){
         super(name, hospital);
         this.field = field;        
+    }
+
+    @Override
+    public String getRole() {
+        return "Patient";
     }
     
 }

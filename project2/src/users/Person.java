@@ -1,13 +1,13 @@
-package src.users;
+package users;
 
 public abstract class Person {
-    private static int id = 0;
+    private String id;
     private String name;
     private String hospital;
     private boolean isAuthenticated; 
 
     public Person(String name, String hospital){
-        this.id = id++;
+        this.id = "0";
         this.name = name;
         this.hospital = hospital;
         isAuthenticated = false;
@@ -24,6 +24,27 @@ public abstract class Person {
     public boolean isAuthenticated(){
         return isAuthenticated;
     }
+
+    public String getId(){
+        return id;
+    }
+
+    public abstract String getRole();
+
+    public String toString(){
+        return getRole() + ": " + name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Person person = (Person) obj;
+        return id.equals(person.id);
+    }
+
+
+
 
     
 

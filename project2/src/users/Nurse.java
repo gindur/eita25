@@ -1,4 +1,4 @@
-package src.users;
+package users;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,15 @@ public class Nurse extends Person{
 
     public void addPatient(Patient patient){
         patients.add(patient);
+    }
+
+    public String getField(){
+        return field;
+    }
+
+    @Override
+    public String getRole() {
+        return "Nurse";
     }
     
 }
