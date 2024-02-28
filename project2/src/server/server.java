@@ -6,6 +6,10 @@ import java.net.*;
 import javax.net.*;
 import javax.net.ssl.*;
 
+import users.Person;
+import util.AuthService;
+import util.DatabaseManager;
+import util.IOManager;
 
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -17,8 +21,13 @@ public class Server implements Runnable {
   private static final String serverKeystorePath = "certificates/server/serverkeystore";
   private static final String serverTruststorePath = "certificates/server/servertruststore";
 
+  private DatabaseManager dbm = new DatabaseManager();
+  private IOManager iom = new IOManager(new AuthService(dbm));
+
   
   public Server(ServerSocket ss) throws IOException {
+    dbm.initialize();
+
     serverSocket = ss;
     newListener();
   }
@@ -31,6 +40,7 @@ public class Server implements Runnable {
       Certificate[] cert = session.getPeerCertificates();
       String subject = ((X509Certificate) cert[0]).getSubjectX500Principal().getName();
       numConnectedClients++;
+
       System.out.println("client connected");
       System.out.println("client name (cert subject DN field): " + subject);
       //added new
@@ -38,21 +48,21 @@ public class Server implements Runnable {
       System.out.println("client certificate issuer: " + issuer);
       BigInteger serialNumber = ((X509Certificate) cert[0]).getSerialNumber();
       System.out.println("client certificate serial number: " + serialNumber);
-
-
       System.out.println(numConnectedClients + " concurrent connection(s)\n");
       
+      Person user = dbm.getPerson(serialNumber.toString());
+      System.out.println("Connected: " + user.toString());
+
       PrintWriter out = null;
       BufferedReader in = null;
       out = new PrintWriter(socket.getOutputStream(), true);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+      out.println(iom.startMessage(user));
+
       String clientMsg = null;
       while ((clientMsg = in.readLine()) != null) {
-        String rev = new StringBuilder(clientMsg).reverse().toString();
-        System.out.println("received '" + clientMsg + "' from client");
-        System.out.print("sending '" + rev + "' to client...");
-        out.println(rev);
+        out.println(iom.handleInput(user, clientMsg));
         out.flush();
         System.out.println("done\n");
       }

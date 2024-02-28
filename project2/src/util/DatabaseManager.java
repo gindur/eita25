@@ -40,16 +40,21 @@ public class DatabaseManager{
         
     }
 
+    public void initialize(){
+        loadRecords();
+        loadUsers();
+    }
+
     public void loadUsers(){
-        Patient x = new Patient("X", "Lund", "heart");
-        Patient y = new Patient("Y", "Lund", "heart");
-        Patient z = new Patient("Z", "Lund", "brain");
+        Patient x = new Patient("X", "Lund", "heart", "572070613607313676882175438734510169177216222779");
+        Patient y = new Patient("Y", "Lund", "heart", "1");
+        Patient z = new Patient("Z", "Lund", "brain", "2");
 
-        Doctor a = new Doctor("Johansson", "Lund", "heart");
-        Doctor smith = new Doctor("Smith", "Lund", "brain"); 
+        Doctor a = new Doctor("Johansson", "Lund", "heart", "3");
+        Doctor smith = new Doctor("Smith", "Lund", "brain", "4"); 
 
-        Nurse larsson = new Nurse("Larsson", "Lund", "heart");
-        Nurse andreasson = new Nurse("Andreasson", "Lund", "brain");
+        Nurse larsson = new Nurse("Larsson", "Lund", "heart", "5");
+        Nurse andreasson = new Nurse("Andreasson", "Lund", "brain", "6");
 
         a.addPatient(x);
         a.addPatient(y);
@@ -182,5 +187,6 @@ public class DatabaseManager{
             continue;
         }
     }
+
 
 }

@@ -7,8 +7,8 @@ public class Nurse extends Person{
     private List<Patient> patients;
     private String field;
 
-    public Nurse(String name, String hospital, String field){
-        super(name, hospital);
+    public Nurse(String name, String hospital, String field, String id){
+        super(name, hospital, id);
         this.patients = new ArrayList<>();
         this.field = field;
         

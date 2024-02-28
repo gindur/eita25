@@ -6,8 +6,8 @@ public abstract class Person {
     private String hospital;
     private boolean isAuthenticated; 
 
-    public Person(String name, String hospital){
-        this.id = "0";
+    public Person(String name, String hospital, String id){
+        this.id = id;
         this.name = name;
         this.hospital = hospital;
         isAuthenticated = false;
