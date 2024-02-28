@@ -15,4 +15,4 @@ javac -d bin src/client/Client.java && java -cp bin src.client.Client localhost 
 javac src/server/Server.java -d bin; java -cp bin server.Server 9876
 
 *Compile and run client from top directory*
-javac src/client/Client.java -d bin; java -cp bin src.client.Client localhost 9876
+javac src/client/Client.java -d bin; java -cp bin client.Client localhost 9876
