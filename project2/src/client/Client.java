@@ -18,8 +18,8 @@ import java.security.cert.*;
 
 public class Client {
 
-  private static final String clientKeystorePath = "certificates/server/serverkeystore";
-  private static final String clientTruststorePath = "certificates/server/servertruststore";
+  private static final String clientKeystorePath = "certificates/client/";
+  private static final String clientTruststorePath = "certificates/client/truststore";
 
   public static void main(String[] args) throws Exception {
     String host = null;
@@ -58,7 +58,7 @@ public class Client {
           // keystore password (storepass)
           ks.load(new FileInputStream(clientKeystorePath + userId), password);
           // truststore password (storepass);
-          ts.load(new FileInputStream(clientTruststorePath + userId), password);
+          ts.load(new FileInputStream(clientTruststorePath), password);
           kmf.init(ks, password); // user password (keypass)
           tmf.init(ts); // keystore can be used as truststore here
           ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);

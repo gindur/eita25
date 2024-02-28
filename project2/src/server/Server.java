@@ -49,7 +49,8 @@ public class Server implements Runnable {
       BigInteger serialNumber = ((X509Certificate) cert[0]).getSerialNumber();
       System.out.println("client certificate serial number: " + serialNumber);
       System.out.println(numConnectedClients + " concurrent connection(s)\n");
-      
+      // would it work if server had a lookup file for serialnumbers linked to user id for example?
+      // then do something like: Person user = dbm.getPerson(fetchUserIdBySerialnumber(SerialNumber));
       Person user = dbm.getPerson(serialNumber.toString());
       System.out.println("Connected: " + user.toString());
 

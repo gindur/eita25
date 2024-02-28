@@ -46,31 +46,34 @@ public class DatabaseManager{
     }
 
     public void loadUsers(){
-        Patient x = new Patient("X", "Lund", "heart", "572070613607313676882175438734510169177216222779");
-        Patient y = new Patient("Y", "Lund", "heart", "1");
-        Patient z = new Patient("Z", "Lund", "brain", "2");
+        Government gov = new Government("Staten", "Lund", "government1");
 
-        Doctor a = new Doctor("Johansson", "Lund", "heart", "3");
-        Doctor smith = new Doctor("Smith", "Lund", "brain", "4"); 
+        Patient pat1 = new Patient("Löf", "Lund", "heart", "patient2");
+        Patient pat2 = new Patient("", "Lund", "brain", "patient3");
 
-        Nurse larsson = new Nurse("Larsson", "Lund", "heart", "5");
-        Nurse andreasson = new Nurse("Andreasson", "Lund", "brain", "6");
+        Nurse nur1 = new Nurse("Larsson", "Lund", "heart", "nurse4");
+        Nurse nur2 = new Nurse("Andreasson", "Lund", "brain", "nurse5");
+        
+        Doctor doc1 = new Doctor("Johansson", "Lund", "heart", "doctor6");
+        Doctor doc2 = new Doctor("Smith", "Lund", "brain", "doctor7"); 
+        
 
-        a.addPatient(x);
-        a.addPatient(y);
 
-        smith.addPatient(z);
 
-        larsson.addPatient(x);
-        andreasson.addPatient(z);
-        andreasson.addPatient(y);
+        doc1.addPatient(pat1);
+        doc2.addPatient(pat1);
+        doc2.addPatient(pat2);
 
-        persons.add(x);
-        persons.add(y);
-        persons.add(z);
-        persons.add(smith);
-        persons.add(larsson);
-        persons.add(andreasson);
+        nur1.addPatient(pat2);
+        nur2.addPatient(pat1);
+
+        persons.add(doc1);
+        persons.add(doc2);
+        persons.add(nur1);
+        persons.add(nur2);
+        persons.add(pat1);
+        persons.add(pat2);
+        persons.add(gov);
     }
 
     public Person getPerson(String id){
