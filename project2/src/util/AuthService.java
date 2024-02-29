@@ -17,41 +17,53 @@ public class AuthService {
      }
 
 
-     public Record readRecord(Person person, String patientId) {
+     public String readRecord(Person person, String patientId) {
       Patient pat = id2Patient(patientId);
-      if (pat == null) return null;
-      String succ = "Read record success";
-      String fail = "Read record denied";
+      if (pat == null) {
+          dbm.log(person, "Read record attempt - Invalid patient ID", patientId);
+          return "Invalid patient ID or access denied."; // Generic message for security
+      }
+  
       Record rec = dbm.getRecord(pat);
-  
-      boolean hasAccess = false;
-  
-      if (person instanceof Doctor && (rec.getField().equals(((Doctor) person).getField()) || rec.getDoctorId().equals(((Doctor)person).getId()))) {
-          hasAccess = true;
-      } else if (person instanceof Nurse && rec.getField().equals(((Nurse) person).getField())|| rec.getNurseId().equals(((Nurse)person).getId())) {
-          hasAccess = true;
-      } else if (person instanceof Patient && person.equals(pat)) {
-          hasAccess = true;
-      } else if (person instanceof Government) {
-          hasAccess = true;
+      if (rec == null) {
+          // Log the attempt but don't disclose the absence of a record
+          dbm.log(person, "Read record attempt - No record found", patientId);
+          return "No record found for patient " + patientId;
       }
   
-      if (hasAccess) {
-          dbm.log(person, succ, pat);
-          return rec;
+      if (hasReadAccess(person, rec, pat)) {
+         dbm.log(person, "Read record success", patientId);
+         return rec.toString(); // Return the record details
+          
       } else {
-          dbm.log(person, fail, pat);
-          return null;
+          dbm.log(person, "Read record denied", patientId);
+          return "Access to record denied."; // Generic denial message
       }
-   }
-   
-   // Success => True
-   // Denied => False
-   public boolean writeRecord(Person person, String patientId, String content){
+  }
+  
+  
+
+  private boolean hasReadAccess(Person person, Record rec, Patient patient) {
+      if (rec == null){
+         return false;
+      }
+      if (person instanceof Doctor) {
+          Doctor doc = (Doctor) person;
+          return rec.getField().equals(doc.getField()) || rec.getDoctorId().equals(doc.getId());
+      } else if (person instanceof Nurse) {
+          Nurse nur = (Nurse) person;
+          return rec.getField().equals(nur.getField()) || rec.getNurseId().equals(nur.getId());
+      } else if (person instanceof Patient && person.equals(patient)) {
+          return true;
+      } else return person instanceof Government;
+  }
+
+   public String writeRecord(Person person, String patientId, String content){
       
       Patient patient = id2Patient(patientId);
-      if (patient == null) return false;
+      if (patient == null) return "No patient found";
       Record rec = dbm.getRecord(patient);
+      if (rec == null) return "No record found";
 
       String succ = "Write record success";
       String fail = "Write record denied";
@@ -62,13 +74,14 @@ public class AuthService {
          hasAccess = true;
      }
      if (hasAccess) {
-      dbm.log(person, succ, patient);
+      dbm.log(person, succ, patientId);
       rec.addEntry(dbm.getTime(), content);
       dbm.saveRecords();
+      return succ;
      } else {
-      dbm.log(person, fail, patient);
+      dbm.log(person, fail, patientId);
+      return fail;
      }
-     return hasAccess;
    }
 
    public boolean createRecord(Person person, String patientId, String nurseId) {
@@ -89,9 +102,9 @@ public class AuthService {
          Doctor doc = (Doctor) person;
          hasAccess = true;
          dbm.createRecord(doc, nurse, patient, doc.getHospital(), doc.getField());
-         dbm.log(person, succ, patient);
+         dbm.log(person, succ, patientId);
       } else {
-          dbm.log(person, fail, patient);
+          dbm.log(person, fail, patientId);
       }
   
       return hasAccess;
@@ -112,9 +125,9 @@ public class AuthService {
       if (person instanceof Government) {
          hasAccess = true;
          dbm.deleteRecord(patient); 
-         dbm.log(person, succ, patient);
+         dbm.log(person, succ, patientId);
       } else {
-         dbm.log(person, fail, patient);
+         dbm.log(person, fail, patientId);
       }
 
       return hasAccess;

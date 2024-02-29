@@ -35,9 +35,9 @@ public class Record {
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("Patient: " + patient + "\n");
-        sb.append("Doctor: " + doctor + "\n");
-        sb.append("Nurse: " + nurse + "\n");
+        sb.append("Patient: " + patient.getId() + "\n");
+        sb.append("Doctor: " + doctor.getId() + "\n");
+        sb.append("Nurse: " + nurse.getId() + "\n");
         sb.append("Hospital: " + hospital + "\n");
         sb.append("Field: " + field + "\n");
         sb.append("Entries: \n");

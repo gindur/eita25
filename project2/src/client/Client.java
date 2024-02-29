@@ -19,7 +19,7 @@ import java.security.cert.*;
 public class Client {
 
   private static final String clientKeystorePath = "certificates/client/";
-  private static final String clientTruststorePath = "certificates/client/truststore";
+  private static final String clientTruststorePath = "certificates/client/clienttruststore";
 
   public static void main(String[] args) throws Exception {
     String host = null;
@@ -56,7 +56,7 @@ public class Client {
           TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
           SSLContext ctx = SSLContext.getInstance("TLSv1.2");
           // keystore password (storepass)
-          ks.load(new FileInputStream(clientKeystorePath + userId), password);
+          ks.load(new FileInputStream(clientKeystorePath + userId + "keystore"), password);
           // truststore password (storepass);
           ts.load(new FileInputStream(clientTruststorePath), password);
           kmf.init(ks, password); // user password (keypass)
@@ -64,7 +64,8 @@ public class Client {
           ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
           factory = ctx.getSocketFactory();
         } catch (Exception e) {
-          throw new IOException(e.getMessage());
+          System.out.println("Invalid login details.");
+          continue;
         }
         SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
         System.out.println("\nsocket before handshake:\n" + socket + "\n");
@@ -90,21 +91,18 @@ public class Client {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msg;
         for (;;) {
-          String input = null;
-          while (input != "done"){
-            input = in.readLine().toLowerCase();
-            System.out.println(input);
+          String input;
+          // Read server response until "DONE"
+          while (!(input = in.readLine()).equals("---")) {
+            System.out.println(input + "\n");
           }
+
           System.out.print(">");
           msg = read.readLine();
           if (msg.equalsIgnoreCase("quit")) {
-            break;
+            break; // Exit loop if user types "quit"
           }
-          System.out.print("sending '" + msg + "' to server...");
           out.println(msg);
-          out.flush();
-          System.out.println("done");
-          System.out.println("received '" + in.readLine() + "' from server\n");
         }
         in.close();
         out.close();

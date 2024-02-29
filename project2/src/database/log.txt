@@ -1,0 +1,45 @@
+2024-02-29 21.25 - Nurse: Larsson Read record attempt - No record found Löf
+2024-02-29 21.30 - Nurse: Larsson Read record attempt - No record found Löf
+2024-02-29 21.32 - Nurse: Larsson Read record attempt - No record found 
+2024-02-29 21.33 - Nurse: Larsson Read record attempt - No record found Löf
+2024-02-29 21.55 - Nurse: Larsson Read record attempt - No record found Löf
+2024-02-29 22.01 - Nurse: Larsson Read record attempt - No record found 
+2024-02-29 22.06 - Nurse: Larsson Read record attempt - No record found Löf
+2024-02-29 22.10 - Nurse: Larsson Read record success Löf
+2024-02-29 22.14 - Nurse: Larsson Read record success Löf
+2024-02-29 22.15 - Nurse: Larsson Read record denied 
+2024-02-29 22.15 - Nurse: Larsson Write record success Löf
+2024-02-29 22.16 - Nurse: Larsson Read record success Löf
+2024-02-29 22.16 - Nurse: Larsson Read record success Löf
+2024-02-29 22.17 - Nurse: Larsson Read record success Löf
+2024-02-29 22.45 - Doctor: Johansson Create record success Löf
+2024-02-29 22.45 - Doctor: Johansson Create record success Löf
+2024-02-29 22.48 - Doctor: Johansson Read record success Löf
+2024-02-29 22.49 - Doctor: Johansson Write record success Löf
+2024-02-29 22.49 - Doctor: Johansson Read record success Löf
+2024-02-29 22.49 - Doctor: Johansson Create record denied 
+2024-02-29 23.03 - Doctor: Johansson Read record attempt - No record found patient1
+2024-02-29 23.04 - Doctor: Johansson Read record attempt - No record found patient2
+2024-02-29 23.06 - Doctor: Johansson Read record attempt - No record found patient1
+2024-02-29 23.13 - Doctor: Johansson Read record attempt - No record found patient1
+2024-02-29 23.13 - Doctor: Johansson Create record success patient1
+2024-02-29 23.13 - Doctor: Johansson Read record success patient1
+2024-02-29 23.14 - Doctor: Johansson Read record success patient1
+2024-02-29 23.14 - Doctor: Johansson Create record denied patient2
+2024-02-29 23.15 - Doctor: Johansson Read record success patient1
+2024-02-29 23.16 - Doctor: Johansson Write record success patient1
+2024-02-29 23.16 - Doctor: Johansson Read record success patient1
+2024-02-29 23.17 - Doctor: Smith Read record denied patient1
+2024-02-29 23.17 - Doctor: Smith Create record success patient1
+2024-02-29 23.19 - Doctor: Smith Read record denied patient1
+2024-02-29 23.25 - Doctor: Smith Read record denied patient1
+2024-02-29 23.27 - Doctor: Smith Create record success patient1
+2024-02-29 23.27 - Doctor: Smith Read record success patient1
+2024-02-29 23.28 - Doctor: Smith Write record success patient1
+2024-02-29 23.28 - Doctor: Smith Read record attempt - Invalid patient ID patient
+2024-02-29 23.28 - Doctor: Smith Read record success patient1
+2024-02-29 23.29 - Government: Staten Read record success patient1
+2024-02-29 23.29 - Government: Staten Read record attempt - No record found patient2
+2024-02-29 23.30 - Government: Staten Delete record success patient1
+2024-02-29 23.30 - Government: Staten Read record attempt - No record found patient1
+2024-02-29 23.38 - Nurse: Larsson Read record attempt - No record found patient2

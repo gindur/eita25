@@ -33,8 +33,11 @@ public class Server implements Runnable {
   }
 
   public void run() {
+    SSLSocket socket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
     try {
-      SSLSocket socket=(SSLSocket)serverSocket.accept();
+      socket=(SSLSocket)serverSocket.accept();
       newListener();
       SSLSession session = socket.getSession();
       Certificate[] cert = session.getPeerCertificates();
@@ -49,36 +52,59 @@ public class Server implements Runnable {
       BigInteger serialNumber = ((X509Certificate) cert[0]).getSerialNumber();
       System.out.println("client certificate serial number: " + serialNumber);
       System.out.println(numConnectedClients + " concurrent connection(s)\n");
-      // would it work if server had a lookup file for serialnumbers linked to user id for example?
-      // then do something like: Person user = dbm.getPerson(fetchUserIdBySerialnumber(SerialNumber));
-      Person user = dbm.getPerson(serialNumber.toString());
-      System.out.println("Connected: " + user.toString());
 
-      PrintWriter out = null;
-      BufferedReader in = null;
+      Person user = dbm.getPersonFromSerial(serialNumber.toString(16));
+      System.out.println("Connected: " + user.getId());
+
+      
       out = new PrintWriter(socket.getOutputStream(), true);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-      out.println(iom.startMessage(user));
+      sendInitialMessages(out, user);
 
-      String clientMsg = null;
-      while ((clientMsg = in.readLine()) != null) {
-        out.println(iom.handleInput(user, clientMsg));
-        out.flush();
-        System.out.println("done\n");
-      }
-      in.close();
-      out.close();
-      socket.close();
-      numConnectedClients--;
-      System.out.println("client disconnected");
-      System.out.println(numConnectedClients + " concurrent connection(s)\n");
+        String clientMsg;
+        while ((clientMsg = in.readLine()) != null) {  // Read until client disconnects
+            if (!clientMsg.isEmpty()) {
+                processClientMessage(out, user, clientMsg);
+            }
+        }
     } catch (IOException e) {
-      System.out.println("Client died: " + e.getMessage());
-      e.printStackTrace();
-      return;
+        System.out.println("Error in communication with the client: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        closeResources(out, in, socket);
+        decrementConnectedClients();
     }
-  }
+}
+
+private void sendInitialMessages(PrintWriter out, Person user) {
+    out.println(iom.startMessage(user));
+    out.println("---");
+}
+
+private void processClientMessage(PrintWriter out, Person user, String clientMsg) {
+    String response = iom.handleInput(user, clientMsg);
+    out.println(response);  // Send response
+    out.println("Possible commands:");
+    out.println(iom.showOptions(user));  // Send additional options
+    out.println("---");  // End of message signal
+}
+
+private void closeResources(PrintWriter out, BufferedReader in, Socket socket) {
+    try {
+        if (in != null) in.close();
+        if (out != null) out.close();
+        if (socket != null) socket.close();
+    } catch (IOException e) {
+        System.out.println("Failed to close resources: " + e.getMessage());
+    }
+}
+
+private void decrementConnectedClients() {
+    numConnectedClients--;
+    System.out.println("Client disconnected");
+    System.out.println(numConnectedClients + " concurrent connection(s)\n");
+}
   
   private void newListener() { (new Thread(this)).start(); } // calls run()
   public static void main(String args[]) {

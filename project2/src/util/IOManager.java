@@ -25,7 +25,7 @@ public class IOManager {
     appendOption(response, "Show this message again: help");
     appendOption(response, "Read record: read <patientId>");
 
-    if (person instanceof Nurse || person instanceof Doctor || person instanceof Government) {
+    if (person instanceof Nurse || person instanceof Doctor) {
         appendOption(response, "Write to existing record: write <patientId> <journalEntry>");
     }
 
@@ -49,25 +49,21 @@ private void appendOption(StringBuilder sb, String option) {
 
 public String handleInput(Person person, String input){
     String inputs[] = input.trim().split(" ");
-    String command = (input.length() > 0) ? inputs[0] : "";
+    String command = inputs.length > 0 ? inputs[0].toLowerCase() : "";
 
     String patientId;
     String nurseId;
     String text;
 
     String cmd = command.toLowerCase();
-
+    System.out.println("Command received: " + cmd); // Debugging line
     try {
         switch(cmd){
             case "read":
                 try {
                     String patient = inputs[1];
-                    Record rec = authService.readRecord(person, patient);
-                    if(rec == null){
-                        return "Permission denied or invalid patient ID.";
-                    } else {
-                        return rec.toString().trim();
-                    }
+                    String rec = authService.readRecord(person, patient);
+                    return rec;
                 } catch (ArrayIndexOutOfBoundsException e){
                     return "No patient ID found.";
                 }
@@ -75,11 +71,7 @@ public String handleInput(Person person, String input){
                 patientId = inputs[1];
                 String[] words = Arrays.copyOfRange(inputs, 2, inputs.length);
                 text = String.join(" ", words);
-                if(authService.writeRecord(person, patientId, text)){
-                    return "Wrote to record for patient: " + patientId;
-                } else {
-                    return "Write permission denied";
-                }
+                return authService.writeRecord(person, patientId, text);
             case "delete":
                 patientId = inputs[1];
                 if (authService.deleteRecord(person, patientId)){
@@ -106,6 +98,7 @@ public String handleInput(Person person, String input){
         }
 
     } catch (Exception e) {
+        e.printStackTrace();
         return "There was an error reading your command";
     }
 

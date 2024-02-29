@@ -1,4 +1,5 @@
 package util;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,17 +18,18 @@ import java.util.stream.Collectors;
 
 import users.*;
 
-public class DatabaseManager{
+public class DatabaseManager {
     private List<Person> persons = new ArrayList<>();
     private List<Record> records = new ArrayList<>();
 
     private final String logPath = "src/database/log.txt";
     private final String recordPath = "src/database/records/";
-    
-    public DatabaseManager(){
+    private final String serialNbrsPath = "src/database/serialnumber_userid.txt";
 
-        try{
-            //Debugging current directory
+    public DatabaseManager() {
+
+        try {
+            // Debugging current directory
             String currentDirectory = new File("").getAbsolutePath();
             System.out.println(currentDirectory);
 
@@ -37,28 +39,25 @@ public class DatabaseManager{
             System.out.println("An error occurred starting the database manager");
             e.printStackTrace();
         }
-        
+
     }
 
-    public void initialize(){
-        loadRecords();
+    public void initialize() {
         loadUsers();
+        loadRecords();
     }
 
-    public void loadUsers(){
-        Government gov = new Government("Staten", "Lund", "government1");
+    public void loadUsers() {
+        Government gov = new Government("Staten", "Lund", "government");
 
-        Patient pat1 = new Patient("Löf", "Lund", "heart", "patient2");
-        Patient pat2 = new Patient("", "Lund", "brain", "patient3");
+        Patient pat1 = new Patient("Löf", "Lund", "brain", "patient1");
+        Patient pat2 = new Patient("William", "Lund", "brain", "patient2");
 
-        Nurse nur1 = new Nurse("Larsson", "Lund", "heart", "nurse4");
-        Nurse nur2 = new Nurse("Andreasson", "Lund", "brain", "nurse5");
-        
-        Doctor doc1 = new Doctor("Johansson", "Lund", "heart", "doctor6");
-        Doctor doc2 = new Doctor("Smith", "Lund", "brain", "doctor7"); 
-        
+        Nurse nur1 = new Nurse("Larsson", "Lund", "heart", "nurse1");
+        Nurse nur2 = new Nurse("Andreasson", "Lund", "brain", "nurse2");
 
-
+        Doctor doc1 = new Doctor("Johansson", "Lund", "heart", "doctor1");
+        Doctor doc2 = new Doctor("Smith", "Lund", "brain", "doctor2");
 
         doc1.addPatient(pat1);
         doc2.addPatient(pat1);
@@ -76,26 +75,26 @@ public class DatabaseManager{
         persons.add(gov);
     }
 
-    public Person getPerson(String id){
+    public Person getPerson(String id) {
         return persons
-        .stream()
-        .filter(c-> c.getId() == id)
-        .findFirst()
-        .orElse(null);
+                .stream()
+                .filter(c -> id.toLowerCase().equals(c.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
-    private List<Patient> getPatients(){
+    private List<Patient> getPatients() {
         return persons
-        .stream()
-        .filter(p -> p instanceof Patient)
-        .map(p -> (Patient) p)
-        .collect(Collectors.toList());
+                .stream()
+                .filter(p -> p instanceof Patient)
+                .map(p -> (Patient) p)
+                .collect(Collectors.toList());
     }
 
-    public void log(Person person, String info, Patient patient){
+    public void log(Person person, String info, String patientId) {
         try {
             BufferedWriter logger = new BufferedWriter(new FileWriter(logPath, true));
-            logger.write(getTime() + " - " + person.toString() +" "+ info +" "+ patient.getName());
+            logger.write(getTime() + " - " + person.toString() + " " + info + " " + patientId);
             logger.newLine();
             logger.close();
         } catch (IOException e) {
@@ -111,25 +110,25 @@ public class DatabaseManager{
         return formatter.format(time);
     }
 
-    public void createRecord(Doctor doc, Nurse nurse, Patient patient, String hospital, String field){
+    public void createRecord(Doctor doc, Nurse nurse, Patient patient, String hospital, String field) {
         records.add(new Record(doc, nurse, patient, hospital, field));
         saveRecords();
     }
 
-    public Record getRecord(Patient patient){
+    public Record getRecord(Patient patient) {
         return records
-        .stream()
-        .filter(r -> r.getPatient().equals(patient))
-        .findFirst()
-        .orElse(null);
-    }
+                .stream()
+                .filter(r -> r.getPatient() != null && r.getPatient().equals(patient))
+                .findFirst()
+                .orElse(null);
+    }    
 
-    public boolean deleteRecord(Patient patient){
+    public boolean deleteRecord(Patient patient) {
         File recordFile = new File(recordPath + patient.getId());
         Record rec = getRecord(patient);
-        if(rec != null){
+        if (rec != null) {
             records.remove(rec);
-            if(recordFile.exists() && recordFile.delete()){
+            if (recordFile.exists() && recordFile.delete()) {
                 return true;
             } else {
                 System.out.println("ERROR: can't delete record.");
@@ -141,15 +140,18 @@ public class DatabaseManager{
 
     }
 
-    public void saveRecords(){
+    public void saveRecords() {
         List<Patient> pats = getPatients();
-        for (Patient pat : pats){
+        for (Patient pat : pats) {
             Record rec = getRecord(pat);
             File recordFile = new File(recordPath + pat.getId());
             try {
-                FileWriter recordWriter = new FileWriter(recordFile, false);
-                recordWriter.write(rec.toString());
-                recordWriter.close();
+                recordFile.createNewFile();
+                FileWriter recordWriter = new FileWriter(recordPath + pat.getId());
+                if (rec != null){
+                    recordWriter.write(rec.toString());
+                    recordWriter.close();
+                }
             } catch (IOException e) {
                 System.out.println("ERROR: could not save records.");
                 e.printStackTrace();
@@ -157,15 +159,21 @@ public class DatabaseManager{
         }
     }
 
-    public void loadRecords(){
+    public void loadRecords() {
+        System.out.println("RECORDS LOADED");
         List<Patient> pats = getPatients();
 
-        for (Patient patient: pats){
-            File prf = new File(recordPath + patient.getId());
-            if (prf.exists()){
+        for (Patient patient : pats) {
+            File file = new File(recordPath + patient.getId());
+            if (file.exists()) {
                 try {
-                    Scanner scan = new Scanner(prf);
-                    Patient pat= (Patient) getPerson(scan.nextLine().split(":")[1]);
+                    Scanner scan = new Scanner(file);
+                    if (!scan.hasNextLine()){
+                        scan.close();
+                        System.out.println("NO RECORD");
+                        return;  
+                    } 
+                    Patient pat = (Patient) getPerson(scan.nextLine().split(":")[1]);
                     Doctor doc = (Doctor) getPerson(scan.nextLine().split(":")[1]);
                     Nurse nur = (Nurse) getPerson(scan.nextLine().split(":")[1]);
                     String hos = scan.nextLine().split(":")[1];
@@ -173,16 +181,16 @@ public class DatabaseManager{
 
                     Record rec = new Record(doc, nur, pat, hos, field);
                     scan.nextLine();
-                    while(scan.hasNextLine()){
+                    while (scan.hasNextLine()) {
                         String text = scan.nextLine();
-                        if (text != ""){
-                            String[] entry = text.split(",");
+                        if (!text.isEmpty()) {
+                            String[] entry = text.split(":");
                             rec.addEntry(entry[0], entry[1]);
                         }
                     }
                     records.add(rec);
                     scan.close();
-                } catch (FileNotFoundException e){
+                } catch (FileNotFoundException e) {
                     System.out.println("ERROR: could not load records.");
                     e.printStackTrace();
                 }
@@ -191,5 +199,28 @@ public class DatabaseManager{
         }
     }
 
+    public Person getPersonFromSerial(String serial) {
+        File file = new File(serialNbrsPath);
+        try (Scanner scan = new Scanner(file)) {
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+                if (!line.isEmpty()) {
+                    String[] info = line.split(":");
+                    if (info.length >= 2) {
+                        String s = info[0].toLowerCase();
+                        String id = info[1];
+                        if (serial.equals(s)) {
+                            return getPerson(id);
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("ERROR: Serial numbers file not found.");
+            e.printStackTrace();
+        }
+        System.out.println("ERROR: could not find person for serial: " + serial);
+        return null;
+    }
 
 }
