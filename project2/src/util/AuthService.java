@@ -61,9 +61,15 @@ public class AuthService {
    public String writeRecord(Person person, String patientId, String content){
       
       Patient patient = id2Patient(patientId);
-      if (patient == null) return "No patient found";
+      if (patient == null){
+         dbm.log(person, "Write: patient not found", patientId);
+         return "No patient found";
+      }
       Record rec = dbm.getRecord(patient);
-      if (rec == null) return "No record found";
+      if (rec == null){
+         dbm.log(person, "Write: record not found", patientId);
+         return "No record found";
+      } 
 
       String succ = "Write record success";
       String fail = "Write record denied";
@@ -101,7 +107,7 @@ public class AuthService {
       if (person instanceof Doctor && ((Doctor) person).getPatients().contains(patient)) {
          Doctor doc = (Doctor) person;
          hasAccess = true;
-         dbm.createRecord(doc, nurse, patient, doc.getHospital(), doc.getField());
+         dbm.createRecord(doc, nurse, patient, patient.getHospital(), patient.getField());
          dbm.log(person, succ, patientId);
       } else {
           dbm.log(person, fail, patientId);

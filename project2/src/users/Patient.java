@@ -12,5 +12,9 @@ public class Patient extends Person {
     public String getRole() {
         return "Patient";
     }
+
+    public String getField(){
+        return field;
+    }
     
 }
