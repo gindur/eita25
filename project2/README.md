@@ -1,4 +1,5 @@
-# eita25
+# Datasecurity project
+Client-server project where I set up a TLS connection and implemented access control for a (simple) medical journal system.
 
 #### *Mac*:
 
